@@ -1,0 +1,30 @@
+{
+  "name": "apidoc-summary",
+  "version": "0.0.1",
+  "description": "Generate a summary page from Apidoc api_data.json",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pianosnake/apidoc-summary.git"
+  },
+  "keywords": [
+    "apidoc",
+    "js",
+    "summary"
+  ],
+  "author": "Florin Alexandrescu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pianosnake/apidoc-summary/issues"
+  },
+  "homepage": "https://github.com/pianosnake/apidoc-summary#readme",
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^11.1.3",
+    "eslint-plugin-import": "^2.2.0",
+    "gulp-eslint": "^3.0.1"
+  }
+}
