@@ -1,6 +1,6 @@
 {
   "name": "apidoc-summary",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Generate a summary page from Apidoc api_data.json",
   "main": "index.js",
   "scripts": {

@@ -1,49 +1,77 @@
 'use strict';
 
 const fs = require('fs');
-const path = require('path');
+const defaultMethods = ['get', 'post', 'patch', 'delete'];
+let shownMethods;
 
-function Endpoint(name, group){
-  this.name = name;
-  this.group = group;
-  this.get = '';
-  this.post = '';
-  this.patch = '';
-  this.delete = '';
+function Endpoint(endpointData){
+  this.name = endpointData.url;
+  this.group = endpointData.group;
+  this[endpointData.type] = endpointData.description; //ie, this.post = 'post to this endpoint for ...'
+}
+
+function parseEndpoints(endpointArray){
+  let groups = {};
+
+  endpointArray.forEach(e =>{
+    if(!groups[e.group]) groups[e.group] = {}; //make a group if it doesn't exist
+
+    if(!groups[e.group][e.url]){ //make an endpoint if it doesn't exist
+      groups[e.group][e.url] = new Endpoint(e);
+    }else{ //if it already exists, then attach a different method to it
+      groups[e.group][e.url][e.type] = e.description;  //ie, this.delete = 'delete this model ...'
+    }
+  });
+
+  return groups;
+}
+
+function addGroupRows(groupTitle, columnCount){
+  let row = `<tr class="group"><td class="group-name">${groupTitle}</td>`;
+  for(let i = 0; i < columnCount; i++){
+    row += '<td></td>';
+  }
+  return row + '</tr>';
+}
+
+function addMethodRows(endpoint, methods){
+  let row = `<tr><td>${endpoint.name}</td>`;
+  methods.forEach(method =>{
+    row += `<td class="description">${endpoint[method] || ''}</td>`;
+  });
+  return row + '</tr>';
+}
+
+function addHeaders(methods){
+  let row = '<tr><td></td>';
+  methods.forEach(method =>{
+    row += `<th>${method}</td>`;
+  });
+  return row + '</tr>';
 }
 
 module.exports = function(options, callback){
   if(!options.src) throw new Error('options.src is required by apidoc-summary');
   if(!options.dest) throw new Error('options.dest is required by apidoc-summary');
 
-  const endpointArray = require(options.src);
+  if(options.columns && options.columns.length > 0){
+    shownMethods = options.columns;
+  }else{
+    shownMethods = defaultMethods;
+  }
 
-  let groups = {};
+  const headers = addHeaders(shownMethods);
+
+  const groups = parseEndpoints(require(options.src));
   let rows = '';
 
-  endpointArray.forEach(e =>{
-    if(e.type === 'info') return;
-    if(!groups[e.group]) groups[e.group] = {};
+  Object.keys(groups).sort().forEach(groupKey =>{
+    rows += addGroupRows(groupKey, shownMethods.length);
 
-    if(!groups[e.group][e.url]){
-      groups[e.group][e.url] = new Endpoint(e.url, e.group);
-    }
-    groups[e.group][e.url][e.type] = e.description;
-  });
+    Object.keys(groups[groupKey]).sort().forEach(endpointKey => {
+      let endpoint = groups[groupKey][endpointKey];
 
-  Object.keys(groups).sort().forEach(group =>{
-    rows += `<tr class="separator"><td class="group-name">${group}</td><td></td><td></td><td></td><td></td></tr>`;
-
-    Object.keys(groups[group]).sort().forEach(key => {
-      let endpoint = groups[group][key];
-      rows += `
-    <tr>
-      <td>${endpoint.name}</td>
-      <td class="description">${endpoint.get}</td>
-      <td class="description">${endpoint.post}</td>
-      <td class="description">${endpoint.patch}</td>
-      <td class="description">${endpoint.delete}</td>
-    </tr>`;
+      rows += addMethodRows(endpoint, shownMethods);
     });
   });
 
@@ -68,11 +96,12 @@ module.exports = function(options, callback){
     font-size: 20px;
     font-family: sans-serif;
     font-weight: lighter;
+    text-transform: uppercase;
   }
   table td.description{
     font-size: small;
   }
-  table tr.separator{
+  table tr.group{
     background-color: aliceblue;
   }
   table td.group-name{
@@ -84,13 +113,7 @@ module.exports = function(options, callback){
   <body>
     <table>
       <thead>
-        <tr>
-          <td></td>
-          <th>GET</th>
-          <th>POST</th>
-          <th>PATCH</th>
-          <th>DELETE</th>
-        </tr>
+        ${headers}
       </thead>
       <tbody>
       ${rows}
