@@ -1,6 +1,6 @@
 # apiDoc Summary
 
-Generate an HTML summary page from the api_data.json file created by [apiDoc](http://apidocjs.com/). The summary
+Generate an HTML summary page from the api_data.json file created by [apiDoc](http://apidocjs.com/) min version 0.17. The summary
 is a table with HTML methods as columns (by default: GET, POST, PATCH, DELETE) and the grouped endpoints as the rows.
 Endpoint descriptions fill in the cells.
 
@@ -11,7 +11,7 @@ Call from Gulp like so, making sure that the apiDoc task runs first:
 
 ``` javascript
 
-const apidocSummary = require('apidoc-summary')
+const apidocSummary = require('apidoc-summary');
 
 ...
 
@@ -21,7 +21,7 @@ gulp.task('apidoc-summary', ['apidoc'], function(cb){
     dest: __dirname + '/public/docs/summary.html',  //required
     columns: ['get', 'post', 'put', 'delete'] //optional
   }, cb);
-})
+});
 ```
 
 The options `src` and `dest` parameters are required. Optionally, a `columns` parameter can be passed with an array of the
