@@ -2,3 +2,4 @@ gulpfile.js
 example.png
 .eslintrc.json
 .idea/
+.npmignore
